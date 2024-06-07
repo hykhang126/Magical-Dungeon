@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
 
 [RequireComponent(typeof(CharacterController))]
 
-public class PlayerMotor : MonoBehaviour
+public class PlayerMotor : MonoBehaviourPunCallbacks
 {
-    [SerializeField]
+    private CharacterController charCon;
     private Camera cam;
 
     private Vector3 velocity = Vector3.zero;
@@ -14,16 +15,18 @@ public class PlayerMotor : MonoBehaviour
     private float cameraRotation;
 
     public Transform viewPoint;
-
-    private CharacterController charCon;
     
 
 
     // Start is called before the first frame update
     void Start()
     { 
-        charCon = GetComponent<CharacterController>();       
+        charCon = GetComponent<CharacterController>();    
+
+        cam = Camera.main;   
     }
+
+
 
     //Set a movement vector
     public void Move(Vector3 _velocity)
@@ -45,22 +48,21 @@ public class PlayerMotor : MonoBehaviour
 
 
 
-
-
     // Update is called once per frame
-    void FixedUpdate()
+    void Update()
     {
-        PerformMovement();
-        PerformRotation();
+        if (photonView.IsMine)
+        {
+            PerformMovement();
+            PerformRotation();
+        }
+
     }
 
     //Performs movement based on velocity var.
     void PerformMovement()
     {
-        if (velocity != Vector3.zero)
-        {
-            charCon.Move(velocity * Time.fixedDeltaTime);
-        }
+       charCon.Move(velocity * Time.fixedDeltaTime);
     }
 
     void PerformRotation()
@@ -71,6 +73,18 @@ public class PlayerMotor : MonoBehaviour
         {
             viewPoint.rotation = Quaternion.Euler(cameraRotation, viewPoint.rotation.eulerAngles.y, viewPoint.rotation.eulerAngles.z);
         }
+    }
+
+
+
+    private void LateUpdate() 
+    {
+        if (photonView.IsMine)
+        {
+            cam.transform.position = viewPoint.position;
+            cam.transform.rotation = viewPoint.rotation;    
+        }
+   
     }
 
 
