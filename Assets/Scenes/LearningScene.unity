@@ -147,7 +147,7 @@ Transform:
   m_GameObject: {fileID: 15205022}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
+  m_LocalPosition: {x: 0, y: 0.62, z: 0.153}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -792,6 +792,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pointOfView: {fileID: 15205023}
+  mouseSensitivity: 1
+  invertLook: 0
 --- !u!1 &1149617245
 GameObject:
   m_ObjectHideFlags: 0
