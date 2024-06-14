@@ -969,6 +969,7 @@ MonoBehaviour:
   groundLayers:
     serializedVersion: 2
     m_Bits: 8
+  bulletImpact: {fileID: 1302849904264020915, guid: d7414865289ae094ea67528a35c97418, type: 3}
 --- !u!143 &819587543
 CharacterController:
   m_ObjectHideFlags: 0
