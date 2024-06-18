@@ -35,12 +35,19 @@ public class PlayerController : MonoBehaviour
     private float heatCounter;
     private bool overheated;
 
+    public Gun[] allGuns;
+    private int selectedGun = 0;
+
     // Start is called before the first frame update
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
 
         cam = Camera.main;
+
+        UIController.instance.weaponTempSlider.maxValue = maxHeat;
+
+        SwitchGun();
     }
 
     // Update is called once per frame
@@ -105,6 +112,28 @@ public class PlayerController : MonoBehaviour
                 Cursor.lockState = CursorLockMode.Locked;
             }
         }
+
+        //Gun Switching
+        if(Input.GetAxisRaw("Mouse ScrollWheel") > 0f)
+        {
+            selectedGun++;
+
+            if(selectedGun >= allGuns.Length)
+            {
+                selectedGun = 0;
+            }
+            SwitchGun();
+        }
+        else if(Input.GetAxisRaw("Mouse ScrollWheel") < 0f)
+        {
+            selectedGun--;
+            if(selectedGun < 0)
+            {
+                selectedGun = allGuns.Length-1;
+            }
+            SwitchGun();
+        }
+
         if (!overheated)
         {
             //Shooting
@@ -114,7 +143,7 @@ public class PlayerController : MonoBehaviour
             }
 
             //Automatic Firing
-            if (Input.GetButton("Fire1"))
+            if (Input.GetButton("Fire1") && allGuns[selectedGun].isAuto)
             {
                 shotCounter -= Time.deltaTime;
 
@@ -138,6 +167,8 @@ public class PlayerController : MonoBehaviour
         {
             heatCounter = 0;
         }
+
+        UIController.instance.weaponTempSlider.value = heatCounter;
     }
 
     private void Shoot()
@@ -171,5 +202,17 @@ public class PlayerController : MonoBehaviour
     {
         cam.transform.position = pointOfView.position;
         cam.transform.rotation = pointOfView.rotation;
+    }
+
+    void SwitchGun()
+    {
+        foreach(Gun gun in allGuns)
+        {
+            gun.gameObject.SetActive(false);
+        }
+        allGuns[selectedGun].gameObject.SetActive(true);
+        heatPerShot = allGuns[selectedGun].heatPerShot;
+        timeBetweenShots = allGuns[selectedGun].timeBetweenShots;
+
     }
 }
