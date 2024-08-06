@@ -18,6 +18,9 @@ public class Launcher : MonoBehaviourPunCallbacks
 
     public GameObject MenuButtons;
 
+    public GameObject CreateRoomScreen;
+    public TMP_InputField roomNameInput;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -32,6 +35,7 @@ public class Launcher : MonoBehaviourPunCallbacks
     {
         loadingScreen.SetActive(false);
         MenuButtons.SetActive(false);
+        CreateRoomScreen.SetActive(false);
     }
 
     public override void OnConnectedToMaster()
@@ -48,9 +52,16 @@ public class Launcher : MonoBehaviourPunCallbacks
         MenuButtons.SetActive(true);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void OpenRoomCreate()
     {
-        
+        CloseMenus();
+
+        CreateRoomScreen.SetActive(true);
+    }
+
+    public void QuitGame()
+    {
+        CloseMenus();
+        Application.Quit();
     }
 }
