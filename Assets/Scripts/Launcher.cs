@@ -4,6 +4,7 @@ using UnityEngine;
 using Photon.Pun;
 using Photon.Realtime;
 using TMPro;
+using UnityEditor;
 
 public class Launcher : MonoBehaviourPunCallbacks
 {
@@ -23,7 +24,8 @@ public class Launcher : MonoBehaviourPunCallbacks
     public TMP_InputField roomNameInput;
 
     public GameObject RoomScreen;
-    public TMP_Text roomNameText;
+    public TMP_Text roomNameText, playerNameLabel;
+    private List<TMP_Text> allPlayerNames = new List<TMP_Text>();
 
     public GameObject ErrorScreen;
     public TMP_Text errorText;
@@ -64,6 +66,8 @@ public class Launcher : MonoBehaviourPunCallbacks
         CloseMenus();
 
         MenuButtons.SetActive(true);
+
+        PhotonNetwork.NickName = Random.Range(0f, 1000f).ToString();
     }
 
     public void OpenRoomCreate()
@@ -100,6 +104,39 @@ public class Launcher : MonoBehaviourPunCallbacks
         RoomScreen.SetActive(true);
 
         roomNameText.text = PhotonNetwork.CurrentRoom.Name;
+        listAllPlayers();
+    }
+
+    private void listAllPlayers()
+    {
+        foreach(TMP_Text player in allPlayerNames)
+        {
+            Destroy(player.gameObject);
+        }
+        allPlayerNames.Clear();
+
+        Player[] players = PhotonNetwork.PlayerList;
+        for(int i = 0; i < players.Length; i++)
+        {
+            TMP_Text newPlayerLabel = Instantiate(playerNameLabel,playerNameLabel.transform.parent);
+            newPlayerLabel.text = players[i].NickName;
+            newPlayerLabel.gameObject.SetActive(true);
+            allPlayerNames.Add(newPlayerLabel);
+        }
+    }
+
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        TMP_Text newPlayerLabel = Instantiate(playerNameLabel, playerNameLabel.transform.parent);
+        newPlayerLabel.text = newPlayer.NickName;
+        newPlayerLabel.gameObject.SetActive(true);
+        
+        allPlayerNames.Add(newPlayerLabel);
+    }
+
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        listAllPlayers();
     }
 
     public override void OnCreateRoomFailed(short returnCode, string message)
