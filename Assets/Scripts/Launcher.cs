@@ -34,6 +34,10 @@ public class Launcher : MonoBehaviourPunCallbacks
     public RoomButton theRoomButton;
     private List<RoomButton> allRoomButtons = new List<RoomButton>();
 
+    public GameObject nameInputScreen;
+    public TMP_InputField nameInput;
+    private bool hasSetNickname;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -52,6 +56,7 @@ public class Launcher : MonoBehaviourPunCallbacks
         RoomScreen.SetActive(false);
         ErrorScreen.SetActive(false);
         RoomBrowserScreen.SetActive(false);
+        nameInputScreen.SetActive(false);
     }
 
     public override void OnConnectedToMaster()
@@ -67,7 +72,20 @@ public class Launcher : MonoBehaviourPunCallbacks
 
         MenuButtons.SetActive(true);
 
-        PhotonNetwork.NickName = Random.Range(0f, 1000f).ToString();
+        PhotonNetwork.NickName = Random.Range(0, 1000).ToString();
+        if (!hasSetNickname)
+        {
+            CloseMenus();
+            nameInputScreen.SetActive(true);
+            if (PlayerPrefs.HasKey("PlayerName"))
+            {
+                nameInput.text = PlayerPrefs.GetString("PlayerName");
+            }
+        }
+        else
+        {
+            PhotonNetwork.NickName = PlayerPrefs.GetString("PlayerName");
+        }
     }
 
     public void OpenRoomCreate()
@@ -203,5 +221,19 @@ public class Launcher : MonoBehaviourPunCallbacks
         CloseMenus();
         loadingText.text = "Joining Room...";
         loadingScreen.SetActive(true);
+    }
+    public void setNickname()
+    {
+        if (!string.IsNullOrEmpty(nameInput.text))
+        {
+            PhotonNetwork.NickName = nameInput.text;
+
+            PlayerPrefs.SetString("PlayerName",nameInput.text);
+
+            CloseMenus();
+            MenuButtons.SetActive(true);
+
+            hasSetNickname = true;
+        }
     }
 }
